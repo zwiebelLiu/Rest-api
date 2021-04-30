@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\PostApiController;
+use App\Http\Controllers\UserController;
 use App\Models\Post;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -22,7 +23,12 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 
 //Route::get('/posts',[PostApiController::class,index]);
-Route::resource('posts', PostApiController::class);
+Route::group(['middleware'=>'auth:sanctum'],function(){
+    Route::resource('posts', PostApiController::class);
+});
+
+Route::post('login',[UserController::class, 'index']);
+
 /*
 
 Route::post('/posts',function ()

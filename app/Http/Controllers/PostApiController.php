@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Post;
 use Illuminate\Http\Request;
+use Validator;
 
 class PostApiController extends Controller
 {
@@ -14,7 +15,7 @@ class PostApiController extends Controller
      */
     public function index()
     {
-        return  Post::all();
+        return Post::all();
     }
 
     /**
@@ -35,14 +36,28 @@ class PostApiController extends Controller
      */
     public function store(Request $request)
     {
-        request()->validate([
-                                'title'=>'required',
+        $rules=array(
+                   'title'=>'required|min:2|max:200',
+                    'content'=>'required'
+                    );
+        $vali=Validator::make($request->all(),$rules);
+        if($vali->fails())
+        {
+            return response()->json($vali->errors(),401);
+        }
+        else
+        {
+            return Post::create([
+                                    'title'=>request('title'),
+                                    'content'=>request('content'),
+                                ]);
+        }
+   /*    $res= request()->validate([
+                                'title'=>'required|min:2|max:200',
                                 'content'=>'required',
                             ]);
-        return Post::create([
-                                'title'=>request('title'),
-                                'content'=>request('content'),
-                            ]);
+*/
+
     }
 
     /**
@@ -54,6 +69,7 @@ class PostApiController extends Controller
     public function show($id)
     {
         //
+        return  Post::findOrfail($id);
     }
 
     /**
